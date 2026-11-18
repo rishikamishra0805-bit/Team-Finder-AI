@@ -1,0 +1,131 @@
+
+{% extends "base.html" %}
+{% block title %}My Profile | Team Finder AI{% endblock %}
+
+{% block content %}
+
+<section class="profile-header">
+  <div class="profile-avatar">
+    {{ current_user.name[0]|upper }}
+  </div>
+
+  <div class="profile-header-info">
+    <div class="eyebrow">✦ YOUR TALENT PROFILE</div>
+    <h1>{{ current_user.name }}</h1>
+    <p>Showcase your skills, interests and goals to find your perfect teammates.</p>
+    <span class="profile-status">✦ Profile Editor</span>
+  </div>
+</section>
+
+<section class="profile-form-section">
+
+  <div class="profile-section-heading">
+    <div>
+      <div class="eyebrow">✦ PERSONAL INFORMATION</div>
+      <h2>Build your profile</h2>
+      <p class="muted">Complete your details to get better project recommendations.</p>
+    </div>
+    <div class="profile-heading-icon">👤</div>
+  </div>
+
+  <form method="post" class="form profile-form">
+
+    <div class="profile-form-heading">
+      <span>01</span>
+      <div>
+        <h3>Basic Information</h3>
+        <p>Your education and professional identity</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+
+      <label>
+        Education
+        <input name="education" value="{{ current_user.education or '' }}" placeholder="B.Tech CSE, College">
+      </label>
+
+      <label>
+        Preferred Role
+        <input name="preferred_role" value="{{ current_user.preferred_role or '' }}" placeholder="Python Developer">
+      </label>
+
+      <label>
+        Skills (comma separated)
+        <input name="skills" value="{{ current_user.skills or '' }}" placeholder="Python, UI/UX, Marketing">
+      </label>
+
+      <label>
+        Interests (comma separated)
+        <input name="interests" value="{{ current_user.interests or '' }}" placeholder="AI, Education, Startups">
+      </label>
+
+    </div>
+
+    <div class="profile-form-heading">
+      <span>02</span>
+      <div>
+        <h3>Working Preferences</h3>
+        <p>Tell teammates how you prefer to collaborate</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+
+      <label>
+        Experience Level
+        <select name="experience">
+          {% for v in ['Beginner','Intermediate','Advanced'] %}
+            <option value="{{ v }}" {% if current_user.experience == v %}selected{% endif %}>{{ v }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>
+        Availability
+        <select name="availability">
+          {% for v in ['Flexible','Weekdays','Weekends','Part-time'] %}
+            <option value="{{ v }}" {% if current_user.availability == v %}selected{% endif %}>{{ v }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>
+        Work Preference
+        <select name="work_preference">
+          {% for v in ['Remote','Hybrid','In-person','Flexible'] %}
+            <option value="{{ v }}" {% if current_user.work_preference == v %}selected{% endif %}>{{ v }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>
+        Goals
+        <input name="goals" value="{{ current_user.goals or '' }}" placeholder="Build portfolio, launch startup">
+      </label>
+
+    </div>
+
+    <div class="profile-form-heading">
+      <span>03</span>
+      <div>
+        <h3>About You</h3>
+        <p>Introduce yourself to potential teammates</p>
+      </div>
+    </div>
+
+    <label>
+      Short Bio
+      <textarea name="bio" rows="5" placeholder="Tell teammates what you enjoy building, what you are learning and what kind of projects interest you...">{{ current_user.bio or '' }}</textarea>
+    </label>
+
+    <div class="profile-save-area">
+      <p class="muted">Your information helps our matching engine discover suitable opportunities.</p>
+      <button type="submit" class="btn primary">Save My Profile →</button>
+    </div>
+
+  </form>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,118 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>{% block title %}Team Finder AI{% endblock %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="{% if request.endpoint in ['main.login', 'main.register'] %}auth-page{% endif %}">
+
+{% if request.endpoint not in ['main.login', 'main.register'] %}
+
+<nav class="nav">
+  <a class="brand" href="{{ url_for('main.index') }}">
+    ✦ Team Finder <span>AI</span>
+  </a>
+
+  <div class="navlinks">
+
+    <a href="{{ url_for('main.index') }}">Home</a>
+    <a href="{{ url_for('main.projects') }}">Explore Projects</a>
+
+    {% if current_user.is_authenticated %}
+
+      <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('main.profile') }}">My Profile</a>
+
+      <!-- NOTIFICATION BELL -->
+      <a href="{{ url_for('main.notifications') }}"
+         class="notification-nav"
+         title="Notifications"
+         aria-label="Notifications">
+
+        <span class="bell-icon">🔔</span>
+
+        {% set unread_notifications = current_user.notifications
+            | selectattr('is_read', 'equalto', false)
+            | list %}
+
+        {% if unread_notifications|length > 0 %}
+          <span class="notification-badge">
+            {{ unread_notifications|length if unread_notifications|length < 100 else '99+' }}
+          </span>
+        {% endif %}
+
+      </a>
+
+      <a class="navbutton" href="{{ url_for('main.logout') }}">Logout</a>
+
+    {% else %}
+
+      <a href="{{ url_for('main.login') }}">Login</a>
+      <a class="navbutton" href="{{ url_for('main.register') }}">Get Started</a>
+
+    {% endif %}
+
+    <select id="themeSelector" class="theme-selector" aria-label="Choose theme">
+      <option value="aurora">Aurora</option>
+      <option value="midnight">Midnight</option>
+      <option value="ocean">Ocean</option>
+      <option value="sunset">Sunset</option>
+      <option value="forest">Forest</option>
+      <option value="rose">Rose</option>
+    </select>
+
+  </div>
+</nav>
+
+{% endif %}
+
+<main class="{% if request.endpoint in ['main.login', 'main.register'] %}auth-container{% else %}container{% endif %}">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="alert {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+
+</main>
+
+{% if request.endpoint not in ['main.login', 'main.register'] %}
+<footer>
+  <div class="footer-brand">✦ Team Finder AI</div>
+  <p>Build Better Teams. Turn Ideas Into Reality.</p>
+  <small>© 2026 Team Finder AI · Made for Collaboration</small>
+</footer>
+{% endif %}
+
+<script>
+  const themeSelector = document.getElementById("themeSelector");
+
+  if (themeSelector) {
+    const savedTheme = localStorage.getItem("teamFinderTheme") || "aurora";
+    document.body.dataset.theme = savedTheme;
+    themeSelector.value = savedTheme;
+
+    themeSelector.addEventListener("change", function () {
+      document.body.dataset.theme = this.value;
+      localStorage.setItem("teamFinderTheme", this.value);
+    });
+  } else {
+    document.body.dataset.theme =
+      localStorage.getItem("teamFinderTheme") || "aurora";
+  }
+</script>
+
+</body>
+</html>

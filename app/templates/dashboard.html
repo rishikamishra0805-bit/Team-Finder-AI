@@ -1,0 +1,660 @@
+
+{% extends "base.html" %}
+{% block title %}Dashboard | Team Finder AI{% endblock %}
+
+{% block content %}
+
+{% set profile_fields = [
+    current_user.education,
+    current_user.skills,
+    current_user.interests,
+    current_user.preferred_role,
+    current_user.experience,
+    current_user.availability,
+    current_user.goals,
+    current_user.work_preference,
+    current_user.bio
+] %}
+
+{% set ns = namespace(completed=0) %}
+
+{% for field in profile_fields %}
+    {% if field and field|string|trim %}
+        {% set ns.completed = ns.completed + 1 %}
+    {% endif %}
+{% endfor %}
+
+{% set profile_percentage = ((ns.completed / 9) * 100)|int %}
+
+{% if profile_percentage == 100 %}
+    {% set profile_status = "Excellent Profile" %}
+{% elif profile_percentage >= 70 %}
+    {% set profile_status = "Almost Complete" %}
+{% elif profile_percentage >= 40 %}
+    {% set profile_status = "Good Progress" %}
+{% else %}
+    {% set profile_status = "Getting Started" %}
+{% endif %}
+
+
+<!-- WELCOME HERO -->
+
+<section class="dashboard-welcome premium-welcome">
+
+    <div class="welcome-content">
+
+        <div class="eyebrow">✦ YOUR PERSONAL WORKSPACE</div>
+
+        <h1>
+            Welcome back,<br>
+            <span>{{ current_user.name }}</span> 👋
+        </h1>
+
+        <p>
+            Your next great collaboration starts here.
+            Discover opportunities, connect with talented people
+            and turn your ideas into reality.
+        </p>
+
+        <div class="dashboard-actions">
+
+            <a class="btn primary"
+               href="{{ url_for('main.new_project') }}">
+                ＋ Create Project
+            </a>
+
+            <a class="btn secondary"
+               href="{{ url_for('main.projects') }}">
+                Explore Projects →
+            </a>
+
+        </div>
+
+        <div class="welcome-mini-note">
+            ✨ Your ideas. Your people. Your next big achievement.
+        </div>
+
+    </div>
+
+    <div class="welcome-decoration">
+
+        <div class="welcome-orbit orbit-a"></div>
+        <div class="welcome-orbit orbit-b"></div>
+
+        <div class="welcome-icon">🚀</div>
+
+        <div class="welcome-floating">
+            ✨ Build something extraordinary
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- LIVE STATISTICS -->
+
+<section class="dashboard-stats premium-stats">
+
+    <article class="stat-card premium-stat">
+
+        <div class="stat-icon purple-icon">🎯</div>
+
+        <div class="stat-info">
+            <div class="stat-number">{{ recommended_count }}</div>
+            <div class="stat-label">Recommended Projects</div>
+            <span class="stat-caption">Opportunities for you</span>
+        </div>
+
+    </article>
+
+    <article class="stat-card premium-stat">
+
+        <div class="stat-icon blue-icon">💡</div>
+
+        <div class="stat-info">
+            <div class="stat-number">{{ created_count }}</div>
+            <div class="stat-label">Projects Created</div>
+            <span class="stat-caption">Ideas shared by you</span>
+        </div>
+
+    </article>
+
+    <article class="stat-card premium-stat">
+
+        <div class="stat-icon green-icon">🤝</div>
+
+        <div class="stat-info">
+            <div class="stat-number">{{ team_count }}</div>
+            <div class="stat-label">My Teams</div>
+            <span class="stat-caption">Projects you joined</span>
+        </div>
+
+    </article>
+
+    <article class="stat-card premium-stat">
+
+        <div class="stat-icon orange-icon">📩</div>
+
+        <div class="stat-info">
+            <div class="stat-number">{{ pending_requests_count }}</div>
+            <div class="stat-label">Pending Requests</div>
+            <span class="stat-caption">Waiting for your review</span>
+        </div>
+
+    </article>
+
+</section>
+
+
+<!-- QUICK ACTIONS -->
+
+<section class="dashboard-section premium-section">
+
+    <div class="dashboard-section-head">
+        <div>
+            <div class="eyebrow">✦ GET STARTED</div>
+            <h2>What would you like to do?</h2>
+            <p class="muted">
+                Your next opportunity is just one step away.
+            </p>
+        </div>
+    </div>
+
+    <div class="cards quick-action-grid">
+
+        <a class="card quick-action-card"
+           href="{{ url_for('main.profile') }}">
+
+            <div class="quick-action-icon purple-icon">👤</div>
+            <span class="quick-action-label">YOUR IDENTITY</span>
+            <h3>Complete Profile</h3>
+
+            <p>
+                Add your skills, interests and goals
+                to improve your team matches.
+            </p>
+
+            <span class="textlink">Update Profile →</span>
+
+        </a>
+
+        <a class="card quick-action-card"
+           href="{{ url_for('main.new_project') }}">
+
+            <div class="quick-action-icon blue-icon">🚀</div>
+            <span class="quick-action-label">START SOMETHING</span>
+            <h3>Launch a Project</h3>
+
+            <p>
+                Share your startup idea and discover
+                people who can help you build it.
+            </p>
+
+            <span class="textlink">Create Project →</span>
+
+        </a>
+
+        <a class="card quick-action-card"
+           href="{{ url_for('main.projects') }}">
+
+            <div class="quick-action-icon green-icon">🔎</div>
+            <span class="quick-action-label">DISCOVER</span>
+            <h3>Find Opportunities</h3>
+
+            <p>
+                Explore projects and connect with
+                people who share your interests.
+            </p>
+
+            <span class="textlink">Explore Now →</span>
+
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- PROFILE COMPLETION -->
+
+<section class="dashboard-section premium-section">
+
+    <div class="profile-progress-card">
+
+        <div class="profile-progress-top">
+
+            <div>
+                <div class="eyebrow">✦ YOUR PROFILE</div>
+                <h2>Build Your Professional Identity</h2>
+
+                <p class="muted">
+                    A complete profile helps our matching system
+                    find more relevant opportunities for you.
+                </p>
+            </div>
+
+            <div class="progress-circle">
+                <strong>{{ profile_percentage }}%</strong>
+                <span>Complete</span>
+            </div>
+
+        </div>
+
+        <div class="progress-track">
+            <div class="progress-fill"
+                 style="width: {{ profile_percentage }}%;">
+            </div>
+        </div>
+
+        <div class="progress-footer">
+            <span>{{ ns.completed }} of 9 sections completed</span>
+            <span>{{ profile_status }}</span>
+        </div>
+
+        <div class="profile-progress-bottom">
+
+            <div class="progress-tip">
+                <span>💡</span>
+                <p>
+                    Keep your profile updated to get better
+                    project recommendations.
+                </p>
+            </div>
+
+            <a class="btn primary"
+               href="{{ url_for('main.profile') }}">
+                Improve My Profile →
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- PENDING JOIN REQUESTS -->
+
+<section class="dashboard-section premium-section">
+
+    <div class="dashboard-section-head">
+
+        <div>
+            <div class="eyebrow">✦ TEAM BUILDING</div>
+            <h2>Pending Join Requests</h2>
+
+            <p class="muted">
+                Students interested in joining your projects.
+                Review their profiles and make your decision.
+            </p>
+        </div>
+
+        <span class="count-badge">
+            {{ pending_requests_count }} Pending
+        </span>
+
+    </div>
+
+    <div class="dashboard-request-list">
+
+        {% for join_request, request_user, request_project in received_requests %}
+
+        <article class="dashboard-request-card">
+
+            <div class="dashboard-request-avatar">
+                {{ request_user.name[0]|upper if request_user.name else "U" }}
+            </div>
+
+            <div class="dashboard-request-info">
+
+                <h3>{{ request_user.name }}</h3>
+
+                <p>
+                    Wants to join
+                    <strong>{{ request_project.title }}</strong>
+                </p>
+
+                <span>
+                    {{ request_user.preferred_role or "Role not specified" }}
+                    ·
+                    {{ request_user.experience or "Experience not specified" }}
+                </span>
+
+                <div class="dashboard-request-skills">
+                    ⚡ {{ request_user.skills or "Skills not added yet" }}
+                </div>
+
+            </div>
+
+            <div class="dashboard-request-actions">
+
+                <a class="btn primary"
+                   href="{{ url_for('main.project_detail', project_id=request_project.id) }}">
+                    Review Request →
+                </a>
+
+            </div>
+
+        </article>
+
+        {% else %}
+
+        <div class="empty dashboard-empty">
+
+            <div class="empty-icon">📭</div>
+
+            <h3>All Caught Up!</h3>
+
+            <p>
+                You don't have any pending join requests.
+                When someone applies to your project,
+                their request will appear here.
+            </p>
+
+            <a class="btn secondary"
+               href="{{ url_for('main.projects') }}">
+                Explore Projects →
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+<!-- MY TEAMS -->
+
+<section class="dashboard-section premium-section">
+
+    <div class="dashboard-section-head">
+
+        <div>
+            <div class="eyebrow">✦ COLLABORATION SPACE</div>
+            <h2>My Teams</h2>
+
+            <p class="muted">
+                Projects where your join request has been accepted.
+            </p>
+        </div>
+
+        <span class="count-badge">
+            {{ team_count }} Teams
+        </span>
+
+    </div>
+
+    <div class="cards my-project-grid">
+
+        {% for membership, team_project in team_memberships %}
+
+        <article class="card my-project-card premium-project-card">
+
+            <div class="my-project-top">
+                <div class="project-icon">🤝</div>
+                <span class="tag">TEAM MEMBER</span>
+            </div>
+
+            <h3>{{ team_project.title }}</h3>
+
+            <p class="project-preview">
+                {{ team_project.description[:140] }}
+                {% if team_project.description|length > 140 %}…{% endif %}
+            </p>
+
+            <div class="team-dashboard-role">
+                <span>YOUR ROLE</span>
+                <strong>{{ membership.role or "Member" }}</strong>
+            </div>
+
+            <div class="my-project-footer">
+                <span>Created by {{ team_project.creator.name if team_project.creator else "Project Creator" }}</span>
+
+                <a class="textlink"
+                   href="{{ url_for('main.project_detail', project_id=team_project.id) }}">
+                    Open Team →
+                </a>
+            </div>
+
+        </article>
+
+        {% else %}
+
+        <div class="empty dashboard-empty">
+
+            <div class="empty-icon">🤝</div>
+
+            <h3>Your Team Journey Starts Here</h3>
+
+            <p>
+                You haven't joined any teams yet.
+                Explore projects and send join requests
+                to become part of a team.
+            </p>
+
+            <a class="btn primary"
+               href="{{ url_for('main.projects') }}">
+                Discover Teams →
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+<!-- RECOMMENDATIONS -->
+
+<section class="dashboard-section premium-section">
+
+    <div class="dashboard-section-head">
+
+        <div>
+            <div class="eyebrow">✦ SMART DISCOVERIES</div>
+            <h2>Recommended For You</h2>
+
+            <p class="muted">
+                Explore projects based on your skills,
+                interests and project requirements.
+            </p>
+        </div>
+
+        <span class="count-badge">
+            {{ recommended_count }} Projects
+        </span>
+
+    </div>
+
+    <div class="cards recommendation-grid">
+
+        {% for p, score, reasons in recommendations %}
+
+        <article class="card recommendation-card premium-project-card">
+
+            <div class="recommendation-top">
+
+                <span class="tag">✦ SMART MATCH</span>
+
+                <div class="match-score">
+                    {{ score }}%
+                    <small>match</small>
+                </div>
+
+            </div>
+
+            <h3>{{ p.title }}</h3>
+
+            <p class="project-preview">
+                {{ p.description[:150] }}
+                {% if p.description|length > 150 %}…{% endif %}
+            </p>
+
+            <div class="match-reasons">
+
+                <strong>✨ Why this matches you</strong>
+
+                <ul class="reason">
+                    {% for r in reasons %}
+                    <li>{{ r }}</li>
+                    {% else %}
+                    <li>Complete your profile to improve your match.</li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+
+            <a class="textlink"
+               href="{{ url_for('main.project_detail', project_id=p.id) }}">
+                View Project Details →
+            </a>
+
+        </article>
+
+        {% else %}
+
+        <div class="empty dashboard-empty">
+
+            <div class="empty-icon">🔍</div>
+
+            <h3>No Recommendations Yet</h3>
+
+            <p>
+                Complete your profile with skills and interests
+                to help us find suitable projects.
+            </p>
+
+            <a class="btn primary"
+               href="{{ url_for('main.profile') }}">
+                Complete My Profile →
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+<!-- MY PROJECTS -->
+
+<section class="dashboard-section premium-section">
+
+    <div class="dashboard-section-head">
+
+        <div>
+            <div class="eyebrow">✦ YOUR CREATIONS</div>
+            <h2>My Projects</h2>
+
+            <p class="muted">
+                Keep track of the ideas you have shared
+                with the community.
+            </p>
+        </div>
+
+        <span class="count-badge">
+            {{ created_count }} Projects
+        </span>
+
+    </div>
+
+    <div class="cards my-project-grid">
+
+        {% for p in my_projects %}
+
+        <article class="card my-project-card premium-project-card">
+
+            <div class="my-project-top">
+                <div class="project-icon">💡</div>
+                <span class="tag">YOUR PROJECT</span>
+            </div>
+
+            <h3>{{ p.title }}</h3>
+
+            <p class="project-preview">
+                {{ p.description[:140] }}
+                {% if p.description|length > 140 %}…{% endif %}
+            </p>
+
+            <div class="my-project-footer">
+                <span>Created by you</span>
+
+                <a class="textlink"
+                   href="{{ url_for('main.project_detail', project_id=p.id) }}">
+                    Manage Project →
+                </a>
+            </div>
+
+        </article>
+
+        {% else %}
+
+        <div class="empty dashboard-empty">
+
+            <div class="empty-icon">💡</div>
+
+            <h3>Your Ideas Deserve a Team!</h3>
+
+            <p>
+                You haven't created any projects yet.
+                Publish your first idea and find people
+                who can bring it to life.
+            </p>
+
+            <a class="btn primary"
+               href="{{ url_for('main.new_project') }}">
+                ＋ Create Your First Project
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+<!-- BOTTOM CALL TO ACTION -->
+
+<section class="dashboard-welcome dashboard-final-cta">
+
+    <div class="welcome-content">
+
+        <div class="eyebrow">✦ THINK BIGGER. BUILD TOGETHER.</div>
+
+        <h2>
+            Great ideas need<br>
+            <span>great teams.</span>
+        </h2>
+
+        <p>
+            Take the next step. Find the right people
+            and turn your vision into reality.
+        </p>
+
+        <div class="dashboard-actions">
+
+            <a class="btn primary"
+               href="{{ url_for('main.projects') }}">
+                Discover Projects →
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="welcome-decoration">
+        <div class="welcome-icon">🌟</div>
+    </div>
+
+</section>
+
+{% endblock %}

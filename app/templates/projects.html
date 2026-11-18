@@ -1,0 +1,406 @@
+
+{% extends "base.html" %}
+
+{% block title %}Explore Projects · Team Finder AI{% endblock %}
+
+{% block content %}
+
+<section class="explore-hero">
+    <div class="explore-hero-content">
+        <span class="eyebrow">✦ DISCOVER OPPORTUNITIES</span>
+        <h1>Find your next <span>big idea.</span></h1>
+        <p>
+            Great ideas become reality with the right people.
+            Discover projects, share your skills and build something amazing.
+        </p>
+
+        <div class="explore-hero-actions">
+            <a class="btn primary" href="{{ url_for('main.new_project') }}">
+                + Start a Project
+            </a>
+            <span class="explore-trust">✦ Discover. Connect. Create.</span>
+        </div>
+    </div>
+
+    <div class="explore-hero-art">
+        <div class="art-orbit orbit-one"></div>
+        <div class="art-orbit orbit-two"></div>
+        <div class="art-center">🚀</div>
+        <div class="art-bubble bubble-one">💡</div>
+        <div class="art-bubble bubble-two">🎯</div>
+        <div class="art-bubble bubble-three">👥</div>
+        <div class="art-caption">Ideas start here</div>
+    </div>
+</section>
+
+
+<section class="explore-toolbar">
+    <div class="explore-heading">
+        <div>
+            <span class="eyebrow">FIND YOUR OPPORTUNITY</span>
+            <h2>Explore Projects</h2>
+            <p>Discover ideas and find your perfect team.</p>
+        </div>
+
+        <div class="explore-total">
+            <strong id="visibleCount">{{ projects|length }}</strong>
+            <span>Projects Available</span>
+        </div>
+    </div>
+
+    <div class="project-filters">
+
+        <div class="project-search">
+            <span>⌕</span>
+            <input
+                type="search"
+                id="projectSearch"
+                placeholder="Search projects, skills or roles..."
+                autocomplete="off"
+            >
+        </div>
+
+        <select id="skillFilter" aria-label="Filter by skill">
+            <option value="">All Skills</option>
+
+            {% set all_skills = [] %}
+
+            {% for p in projects %}
+                {% for skill in (p.required_skills or '').replace(',', ' ').split() %}
+                    {% if skill.lower() not in all_skills %}
+                        {% if all_skills.append(skill.lower()) %}{% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+
+            {% for skill in all_skills|sort %}
+                <option value="{{ skill }}">{{ skill|title }}</option>
+            {% endfor %}
+        </select>
+
+        <select id="sortFilter" aria-label="Sort projects">
+            <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>
+                Newest First
+            </option>
+            <option value="match" {% if sort_by == 'match' %}selected{% endif %}>
+                Best Match
+            </option>
+        </select>
+
+    </div>
+</section>
+
+
+<section class="explore-project-grid" id="projectGrid">
+
+    {% for p in projects %}
+
+    {% set score = match_scores.get(p.id) %}
+    {% set member_count = team_counts.get(p.id, 0) %}
+
+    <article class="explore-project-card"
+        data-search="{{ (p.title ~ ' ' ~ p.description ~ ' ' ~ (p.required_skills or '') ~ ' ' ~ (p.roles_needed or ''))|lower }}"
+        data-skills="{{ (p.required_skills or '')|lower }}"
+        data-match="{{ score if score is not none else -1 }}"
+        data-created="{{ p.created_at }}">
+
+        <div class="explore-card-top">
+
+            <div class="explore-project-icon">
+                {% set icons = ['🚀', '💡', '🎨', '🤖', '🌐', '⚡'] %}
+                {{ icons[loop.index0 % 6] }}
+            </div>
+
+            <div class="explore-card-badges">
+
+                {% if score is not none %}
+                    <span class="match-badge">
+                        ✨ {{ score }}% Match
+                    </span>
+                {% else %}
+                    <span class="creator-badge">
+                        YOUR PROJECT
+                    </span>
+                {% endif %}
+
+                <span class="open-status">
+                    <span></span>
+                    OPEN
+                </span>
+
+            </div>
+        </div>
+
+
+        <div class="explore-card-body">
+
+            <h3>{{ p.title }}</h3>
+
+            <p class="explore-description">
+                {{ p.description }}
+            </p>
+
+            <div class="explore-detail">
+                <span>⚡ REQUIRED SKILLS</span>
+
+                <div class="explore-tags">
+                    {% for skill in (p.required_skills or '').replace(',', ' ').split() %}
+                        {% if loop.index <= 5 %}
+                            <span>{{ skill }}</span>
+                        {% endif %}
+                    {% else %}
+                        <span>Skills not specified</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="explore-detail">
+                <span>👥 LOOKING FOR</span>
+                <p>
+                    {{ p.roles_needed or "Open to interested teammates" }}
+                </p>
+            </div>
+
+            <div class="explore-card-stats">
+
+                <div>
+                    <span>👥</span>
+                    <strong>{{ member_count }}</strong>
+                    <small>Members</small>
+                </div>
+
+                <div>
+                    <span>🎯</span>
+                    <strong>
+                        {% if score is not none %}
+                            {{ score }}%
+                        {% else %}
+                            —
+                        {% endif %}
+                    </strong>
+                    <small>Compatibility</small>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="explore-card-footer">
+            <span>Build something meaningful</span>
+
+            <a href="{{ url_for('main.project_detail', project_id=p.id) }}">
+                View Details <span>→</span>
+            </a>
+        </div>
+
+    </article>
+
+    {% else %}
+
+    <div class="explore-empty">
+        <div>💡</div>
+        <h3>Your next big idea starts here.</h3>
+        <p>
+            There are no projects yet. Be the first to create one
+            and find your team.
+        </p>
+        <a class="btn primary" href="{{ url_for('main.new_project') }}">
+            + Create First Project
+        </a>
+    </div>
+
+    {% endfor %}
+
+    <div class="explore-no-results" id="noResults" hidden>
+        <div>🔎</div>
+        <h3>No matching projects found</h3>
+        <p>Try another project name or skill.</p>
+    </div>
+
+</section>
+
+
+<style>
+.explore-card-badges {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    min-width: 105px;
+}
+
+.match-badge,
+.creator-badge {
+    padding: 7px 12px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.match-badge {
+    background: #e9f9f0;
+    color: #13844b;
+}
+
+.creator-badge {
+    background: var(--soft);
+    color: var(--primary);
+}
+
+.explore-card-badges .open-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 11px;
+    border-radius: 30px;
+    background: var(--soft);
+    white-space: nowrap;
+    font-size: 10px;
+}
+
+.explore-card-stats {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    padding: 15px 0;
+    margin-top: 15px;
+    border-top: 1px solid var(--line);
+}
+
+.explore-card-stats div {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.explore-card-stats strong {
+    font-size: 14px;
+    color: var(--ink);
+}
+
+.explore-card-stats small {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.explore-card-stats span {
+    font-size: 15px;
+}
+
+#sortFilter {
+    min-width: 150px;
+    padding: 12px 15px;
+    min-height: 46px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    cursor: pointer;
+}
+
+.project-search {
+    min-height: 46px;
+}
+
+.explore-card-top {
+    align-items: flex-start;
+}
+
+@media (max-width: 650px) {
+    .explore-card-badges {
+        min-width: auto;
+    }
+
+    .explore-card-stats {
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+}
+</style>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput = document.getElementById("projectSearch");
+    const skillFilter = document.getElementById("skillFilter");
+    const sortFilter = document.getElementById("sortFilter");
+
+    const grid = document.getElementById("projectGrid");
+    const visibleCount = document.getElementById("visibleCount");
+    const noResults = document.getElementById("noResults");
+
+    const cards = Array.from(
+        document.querySelectorAll(".explore-project-card")
+    );
+
+    function filterProjects() {
+
+        const query = searchInput.value.toLowerCase().trim();
+        const selectedSkill = skillFilter.value.toLowerCase();
+
+        let visible = 0;
+
+        cards.forEach(card => {
+
+            const searchableText = card.dataset.search || "";
+            const skills = (card.dataset.skills || "").toLowerCase();
+
+            const matchesSearch = searchableText.includes(query);
+
+            const matchesSkill = !selectedSkill ||
+                skills.split(/[\s,]+/).includes(selectedSkill);
+
+            const show = matchesSearch && matchesSkill;
+
+            card.hidden = !show;
+
+            if (show) visible++;
+
+        });
+
+        visibleCount.textContent = visible;
+        noResults.hidden = visible !== 0 || cards.length === 0;
+    }
+
+
+    function sortProjects() {
+
+        const sortValue = sortFilter.value;
+
+        const sortedCards = [...cards];
+
+        sortedCards.sort((a, b) => {
+
+            if (sortValue === "match") {
+                return Number(b.dataset.match) -
+                    Number(a.dataset.match);
+            }
+
+            return new Date(b.dataset.created) -
+                new Date(a.dataset.created);
+        });
+
+        sortedCards.forEach(card => {
+            grid.insertBefore(card, noResults);
+        });
+    }
+
+
+    searchInput.addEventListener("input", filterProjects);
+    skillFilter.addEventListener("change", filterProjects);
+
+    sortFilter.addEventListener("change", function () {
+        sortProjects();
+        filterProjects();
+    });
+
+    sortProjects();
+    filterProjects();
+
+});
+</script>
+
+{% endblock %}

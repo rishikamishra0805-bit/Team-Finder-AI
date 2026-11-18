@@ -1,0 +1,94 @@
+
+{% extends "base.html" %}
+
+{% block title %}Login · Team Finder AI{% endblock %}
+
+{% block content %}
+
+<section class="auth-page">
+
+    <!-- Left Visual Section -->
+    <div class="auth-visual">
+        <div class="auth-visual-content">
+
+            <div class="auth-logo">✦ TEAM FINDER AI</div>
+
+            <div class="auth-illustration">🤝</div>
+
+            <h1>Great things happen when the right people connect.</h1>
+
+            <p>
+                Discover talented people, share your ideas and
+                build something meaningful together.
+            </p>
+
+            <div class="auth-highlight">
+                ✨ Find your people. Build your future.
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Right Login Section -->
+    <div class="auth-form-side">
+
+        <div class="auth-form-card">
+
+            <div class="auth-small-icon">👋</div>
+
+            <div class="eyebrow">WELCOME BACK</div>
+
+            <h2>Login to your account</h2>
+
+            <p class="muted">
+                Continue your journey with Team Finder AI.
+            </p>
+
+            <form method="POST" class="form auth-form">
+
+                <label for="email">
+                    Email Address
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email address"
+                        autocomplete="email"
+                        required
+                    >
+                </label>
+
+                <label for="password">
+                    Password
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+                </label>
+
+                <button type="submit" class="btn primary auth-submit">
+                    Login to Continue →
+                </button>
+
+            </form>
+
+            <div class="auth-bottom">
+                <p>
+                    Don't have an account?
+                    <a href="{{ url_for('main.register') }}">
+                        Create New Account
+                    </a>
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

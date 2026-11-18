@@ -1,0 +1,79 @@
+
+{% extends "base.html" %}
+
+{% block title %}Notifications | Team Finder AI{% endblock %}
+
+{% block content %}
+
+<div class="page-head">
+    <div>
+        <div class="eyebrow">YOUR UPDATES</div>
+        <h1>Notifications 🔔</h1>
+        <p class="muted">Stay updated with your project requests and team activities.</p>
+    </div>
+
+    {% if unread_count > 0 %}
+    <form method="POST" action="{{ url_for('main.mark_all_notifications_read') }}">
+        <button type="submit" class="btn secondary">
+            Mark all as read
+        </button>
+    </form>
+    {% endif %}
+</div>
+
+<div class="notification-summary">
+    <div class="notification-summary-icon">🔔</div>
+    <div>
+        <strong>{{ unread_count }} unread notifications</strong>
+        <p class="muted">Here are your latest updates.</p>
+    </div>
+</div>
+
+<div class="notification-list">
+
+    {% if notifications %}
+
+        {% for notification in notifications %}
+
+        <a href="{{ url_for('main.open_notification', notification_id=notification.id) }}"
+           class="notification-card {% if not notification.is_read %}unread{% endif %}">
+
+            <div class="notification-icon">
+                {% if "accepted" in notification.message|lower %}
+                    ✓
+                {% elif "not accepted" in notification.message|lower %}
+                    !
+                {% else %}
+                    👤
+                {% endif %}
+            </div>
+
+            <div class="notification-content">
+                <p>{{ notification.message }}</p>
+
+                <span class="notification-time">
+                    {{ notification.created_at.strftime('%d %b %Y, %I:%M %p') if notification.created_at else 'Recently' }}
+                </span>
+            </div>
+
+            {% if not notification.is_read %}
+                <span class="notification-dot"></span>
+            {% endif %}
+
+        </a>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty-state notification-empty">
+            <div class="empty-icon">🔔</div>
+            <h3>You're all caught up!</h3>
+            <p class="muted">You don't have any notifications yet.</p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,154 @@
+
+{% extends "base.html" %}
+{% block title %}Home | Team Finder AI{% endblock %}
+
+{% block content %}
+
+<section class="slider">
+
+  <div class="slide active slide-one">
+    <div class="slide-content">
+      <div class="eyebrow">✦ AI-POWERED COLLABORATION</div>
+      <h1>Great ideas need<br><span>the right team.</span></h1>
+      <p>Find talented people, connect with creative minds and turn your ideas into reality.</p>
+      <div class="actions">
+        <a class="btn primary" href="{{ url_for('main.register') }}">Get Started ↗</a>
+        <a class="btn secondary" href="{{ url_for('main.projects') }}">Explore Projects</a>
+      </div>
+      <div class="slide-note">✦ Discover · Connect · Create</div>
+    </div>
+    <div class="slide-art art-one">
+      <div class="orbit orbit-one"></div>
+      <div class="orbit orbit-two"></div>
+      <div class="art-center">✦</div>
+      <div class="float-card float-one">👩‍💻 Developer</div>
+      <div class="float-card float-two">🎨 Designer</div>
+      <div class="float-card float-three">🚀 Innovator</div>
+    </div>
+  </div>
+
+  <div class="slide slide-two">
+    <div class="slide-content">
+      <div class="eyebrow">✦ INTELLIGENT TEAM DISCOVERY</div>
+      <h1>Meet your perfect<br><span>project partners.</span></h1>
+      <p>Discover teammates through skills, interests, goals and compatibility with your project.</p>
+      <div class="actions">
+        <a class="btn primary" href="{{ url_for('main.projects') }}">Find Projects ↗</a>
+        <a class="btn secondary" href="{{ url_for('main.register') }}">Join Community</a>
+      </div>
+      <div class="slide-note">✦ Skills · Interests · Compatibility</div>
+    </div>
+    <div class="slide-art art-two">
+      <div class="team-circle">🤝</div>
+      <div class="team-person person-one">👩🏻‍💻</div>
+      <div class="team-person person-two">👨🏻‍🎨</div>
+      <div class="team-person person-three">🧑🏻‍🚀</div>
+      <div class="team-person person-four">👩🏻‍🔬</div>
+      <div class="match-card">✨ Smart Team Matching</div>
+    </div>
+  </div>
+
+  <div class="slide slide-three">
+    <div class="slide-content">
+      <div class="eyebrow">✦ FROM IDEA TO IMPACT</div>
+      <h1>Build together.<br><span>Achieve more.</span></h1>
+      <p>Bring your vision to life with the right people, shared passion and collaborative thinking.</p>
+      <div class="actions">
+        <a class="btn primary" href="{{ url_for('main.register') }}">Create Your Profile ↗</a>
+        <a class="btn secondary" href="{{ url_for('main.projects') }}">Discover More</a>
+      </div>
+      <div class="slide-note">✦ Your idea deserves a great team.</div>
+    </div>
+    <div class="slide-art art-three">
+      <div class="rocket">🚀</div>
+      <div class="planet planet-one"></div>
+      <div class="planet planet-two"></div>
+      <div class="success-card">💡 Idea → 🚀 Innovation</div>
+    </div>
+  </div>
+
+  <button class="slider-arrow slider-prev" type="button" aria-label="Previous slide">‹</button>
+  <button class="slider-arrow slider-next" type="button" aria-label="Next slide">›</button>
+
+  <div class="slider-dots">
+    <button class="slider-dot active" type="button" aria-label="Slide 1"></button>
+    <button class="slider-dot" type="button" aria-label="Slide 2"></button>
+    <button class="slider-dot" type="button" aria-label="Slide 3"></button>
+  </div>
+
+</section>
+
+<section class="section-head">
+  <div>
+    <div class="eyebrow">✦ DISCOVER OPPORTUNITIES</div>
+    <h2>Projects looking for teammates</h2>
+  </div>
+  <a href="{{ url_for('main.projects') }}">View all →</a>
+</section>
+
+<div class="cards">
+{% for p in projects %}
+  <article class="card">
+    <div class="tag">✦ PROJECT</div>
+    <h3>{{ p.title }}</h3>
+    <p>{{ p.description[:150] }}{% if p.description|length > 150 %}…{% endif %}</p>
+    <div class="muted">Skills: {{ p.required_skills or "Not specified" }}</div>
+    <a class="textlink" href="{{ url_for('main.project_detail', project_id=p.id) }}">Explore project →</a>
+  </article>
+{% else %}
+  <div class="empty">No projects yet. Register and publish the first project.</div>
+{% endfor %}
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const slides = document.querySelectorAll(".slide");
+  const dots = document.querySelectorAll(".slider-dot");
+  const next = document.querySelector(".slider-next");
+  const prev = document.querySelector(".slider-prev");
+
+  if (!slides.length) return;
+
+  let current = 0;
+  let timer;
+
+  function showSlide(index) {
+    current = (index + slides.length) % slides.length;
+
+    slides.forEach((slide, i) => {
+      slide.classList.toggle("active", i === current);
+    });
+
+    dots.forEach((dot, i) => {
+      dot.classList.toggle("active", i === current);
+    });
+  }
+
+  function startTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => showSlide(current + 1), 5000);
+  }
+
+  next.addEventListener("click", () => {
+    showSlide(current + 1);
+    startTimer();
+  });
+
+  prev.addEventListener("click", () => {
+    showSlide(current - 1);
+    startTimer();
+  });
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener("click", () => {
+      showSlide(i);
+      startTimer();
+    });
+  });
+
+  showSlide(0);
+  startTimer();
+});
+</script>
+
+{% endblock %}

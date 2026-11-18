@@ -1,0 +1,460 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ project.title }} · Team Finder AI{% endblock %}
+
+{% block content %}
+
+<div class="project-detail-page">
+
+    <div class="detail-breadcrumb">
+        <a href="{{ url_for('main.projects') }}">← Explore Projects</a>
+        <span>/</span>
+        <span>Project Details</span>
+    </div>
+
+    <!-- PROJECT HERO -->
+
+    <section class="premium-detail-hero">
+        <div class="detail-hero-decoration">✦</div>
+
+        <div class="detail-hero-main">
+            <div class="detail-kicker">
+                <span class="detail-kicker-icon">🚀</span>
+                PROJECT SPOTLIGHT
+            </div>
+
+            <h1>{{ project.title }}</h1>
+
+            <p class="detail-hero-description">
+                {{ project.description }}
+            </p>
+
+            <div class="detail-hero-meta">
+                <span class="detail-open-pill">
+                    <span></span> OPEN FOR TEAMMATES
+                </span>
+
+                {% if project.creator %}
+                <span class="detail-creator">
+                    Created by <strong>{{ project.creator.name }}</strong>
+                </span>
+                {% endif %}
+            </div>
+
+            {% if current_user.id != project.creator_id %}
+
+                {% if is_team_member %}
+                <div class="join-status-message accepted-status">
+                    ✓ You are a member of this project.
+                </div>
+
+                {% elif own_request and own_request.status == "Pending" %}
+                <div class="join-status-message pending-status">
+                    ◷ Your join request is waiting for approval.
+                </div>
+
+                {% elif own_request and own_request.status == "Rejected" %}
+                <form method="POST"
+                      action="{{ url_for('main.request_to_join', project_id=project.id) }}">
+                    <button type="submit" class="btn primary">
+                        Send Request Again →
+                    </button>
+                </form>
+
+                {% else %}
+                <form method="POST"
+                      action="{{ url_for('main.request_to_join', project_id=project.id) }}">
+                    <button type="submit" class="btn primary">
+                        + Request to Join Project
+                    </button>
+                </form>
+                {% endif %}
+
+            {% else %}
+            <div class="creator-own-project-label">
+                ✦ You created this project
+            </div>
+            {% endif %}
+
+        </div>
+
+        <div class="detail-hero-visual">
+            <div class="detail-visual-ring ring-a"></div>
+            <div class="detail-visual-ring ring-b"></div>
+            <div class="detail-visual-center">🚀</div>
+            <span class="detail-floating-icon float-a">💡</span>
+            <span class="detail-floating-icon float-b">👥</span>
+            <span class="detail-floating-icon float-c">⚡</span>
+        </div>
+    </section>
+
+
+    <!-- PROJECT REQUIREMENTS -->
+
+    <section class="detail-requirements">
+
+        <div class="detail-section-heading">
+            <div>
+                <span class="eyebrow">THE PROJECT BLUEPRINT</span>
+                <h2>What this project needs</h2>
+                <p>Understand the skills, roles and working preferences.</p>
+            </div>
+            <div class="detail-section-symbol">✦</div>
+        </div>
+
+        <div class="premium-detail-grid">
+
+            <article class="premium-detail-card">
+                <div class="premium-detail-icon icon-purple">⚡</div>
+                <div>
+                    <span>SKILLS NEEDED</span>
+                    <h3>{{ project.required_skills or "Not specified" }}</h3>
+                </div>
+            </article>
+
+            <article class="premium-detail-card">
+                <div class="premium-detail-icon icon-blue">👥</div>
+                <div>
+                    <span>ROLES NEEDED</span>
+                    <h3>{{ project.roles_needed or "Not specified" }}</h3>
+                </div>
+            </article>
+
+            <article class="premium-detail-card">
+                <div class="premium-detail-icon icon-orange">💡</div>
+                <div>
+                    <span>INTERESTS</span>
+                    <h3>{{ project.interests or "Not specified" }}</h3>
+                </div>
+            </article>
+
+            <article class="premium-detail-card">
+                <div class="premium-detail-icon icon-green">🎯</div>
+                <div>
+                    <span>EXPERIENCE LEVEL</span>
+                    <h3>{{ project.experience or "Not specified" }}</h3>
+                </div>
+            </article>
+
+            <article class="premium-detail-card">
+                <div class="premium-detail-icon icon-pink">📅</div>
+                <div>
+                    <span>AVAILABILITY</span>
+                    <h3>{{ project.availability or "Not specified" }}</h3>
+                </div>
+            </article>
+
+            <article class="premium-detail-card">
+                <div class="premium-detail-icon icon-teal">🌐</div>
+                <div>
+                    <span>WORK PREFERENCE</span>
+                    <h3>{{ project.work_preference or "Not specified" }}</h3>
+                </div>
+            </article>
+
+        </div>
+    </section>
+
+
+    <!-- TEAM MEMBERS -->
+
+    <section class="team-members-section">
+
+        <div class="detail-section-heading">
+            <div>
+                <span class="eyebrow">THE PEOPLE BEHIND THE IDEA</span>
+                <h2>Project Team 👥</h2>
+                <p>Meet the people who are part of this project.</p>
+            </div>
+
+            <div class="candidate-count">
+                <strong>{{ team_members|length + 1 }}</strong>
+                <span>Team Members</span>
+            </div>
+        </div>
+
+        <div class="team-member-grid">
+
+            <article class="team-member-card">
+                <div class="team-member-avatar">
+                    {{ project.creator.name[0]|upper if project.creator and project.creator.name else "C" }}
+                </div>
+                <div>
+                    <h3>{{ project.creator.name if project.creator else "Project Creator" }}</h3>
+                    <span class="team-role-badge">PROJECT CREATOR</span>
+                </div>
+            </article>
+
+            {% for member, member_user in team_members %}
+
+            <article class="team-member-card">
+                <div class="team-member-avatar">
+                    {{ member_user.name[0]|upper if member_user.name else "U" }}
+                </div>
+                <div>
+                    <h3>{{ member_user.name }}</h3>
+                    <span class="team-role-badge">{{ member.role or "Member" }}</span>
+                </div>
+            </article>
+
+            {% else %}
+
+            <div class="team-empty-message">
+                <span>🤝</span>
+                <p>Your team is just getting started. Invite the right people!</p>
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+
+    {% if current_user.id == project.creator_id %}
+
+    <!-- CREATOR: JOIN REQUEST MANAGEMENT -->
+
+    <section class="join-requests-section">
+
+        <div class="detail-section-heading">
+            <div>
+                <span class="eyebrow">TEAM BUILDING CONTROL CENTER</span>
+                <h2>Join Requests 📩</h2>
+                <p>Review candidates and decide who joins your team.</p>
+            </div>
+
+            <div class="candidate-count">
+                <strong>{{ join_requests|selectattr("status", "equalto", "Pending")|list|length }}</strong>
+                <span>Pending Requests</span>
+            </div>
+        </div>
+
+        <div class="join-request-list">
+
+            {% for join_request, request_user in request_entries %}
+
+            <article class="join-request-card">
+
+                <div class="request-user-info">
+
+                    <div class="premium-avatar">
+                        {{ request_user.name[0]|upper if request_user.name else "U" }}
+                    </div>
+
+                    <div class="request-user-details">
+                        <h3>{{ request_user.name }}</h3>
+                        <p>{{ request_user.email }}</p>
+                        <span>{{ request_user.preferred_role or "Role not specified" }}</span>
+                    </div>
+
+                </div>
+
+                <div class="request-candidate-skills">
+                    <span>SKILLS</span>
+                    <p>{{ request_user.skills or "Not added" }}</p>
+                </div>
+
+                <div class="request-candidate-experience">
+                    <span>EXPERIENCE</span>
+                    <strong>{{ request_user.experience or "Not specified" }}</strong>
+                </div>
+
+                <div class="request-actions">
+
+                    {% if join_request.status == "Pending" %}
+
+                    <span class="request-status pending-status">
+                        ◷ Pending
+                    </span>
+
+                    <form method="POST"
+                          action="{{ url_for('main.join_request_action', request_id=join_request.id, action='accept') }}">
+                        <button type="submit" class="request-accept-btn">
+                            ✓ Accept
+                        </button>
+                    </form>
+
+                    <form method="POST"
+                          action="{{ url_for('main.join_request_action', request_id=join_request.id, action='reject') }}">
+                        <button type="submit" class="request-reject-btn">
+                            ✕ Reject
+                        </button>
+                    </form>
+
+                    {% elif join_request.status == "Accepted" %}
+
+                    <span class="request-status accepted-status">
+                        ✓ Accepted
+                    </span>
+
+                    {% else %}
+
+                    <span class="request-status rejected-status">
+                        ✕ Rejected
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+            </article>
+
+            {% else %}
+
+            <div class="premium-no-candidates">
+                <div class="no-candidates-icon">📭</div>
+                <h3>No join requests yet</h3>
+                <p>
+                    When students request to join your project,
+                    their applications will appear here.
+                </p>
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+
+    <!-- CREATOR: MATCHING CANDIDATES -->
+
+    <section class="premium-matches-section">
+
+        <div class="detail-section-heading matches-heading">
+            <div>
+                <span class="eyebrow">SMART TEAM DISCOVERY</span>
+                <h2>Potential Team Members <span>✦</span></h2>
+                <p>Discover people whose profiles match this project's requirements.</p>
+            </div>
+
+            <div class="candidate-count">
+                <strong>{{ matches|length }}</strong>
+                <span>Potential Matches</span>
+            </div>
+        </div>
+
+        <div class="premium-candidate-grid">
+
+            {% for user, score, reasons in matches %}
+
+            <article class="premium-candidate-card">
+
+                <div class="candidate-card-top">
+                    <div class="premium-avatar">
+                        {{ user.name[0]|upper if user.name else "U" }}
+                    </div>
+
+                    <div class="premium-match-score">
+                        <strong>{{ score }}%</strong>
+                        <span>COMPATIBILITY</span>
+                    </div>
+                </div>
+
+                <div class="candidate-identity">
+                    <h3>{{ user.name }}</h3>
+                    <p>{{ user.preferred_role or "Role not specified" }}</p>
+                </div>
+
+                <div class="candidate-experience">
+                    <span>EXPERIENCE LEVEL</span>
+                    <strong>{{ user.experience or "Not specified" }}</strong>
+                </div>
+
+                <div class="candidate-skills-block">
+                    <span class="candidate-block-label">⚡ SKILLS</span>
+                    <p>{{ user.skills or "Skills not added yet" }}</p>
+                </div>
+
+                <div class="candidate-reasons-block">
+                    <span class="candidate-block-label">✦ WHY THIS MATCH?</span>
+
+                    {% for reason in reasons %}
+                    <div class="candidate-reason">
+                        <span>✓</span>
+                        {{ reason }}
+                    </div>
+                    {% else %}
+                    <p class="no-reasons">No matching details available.</p>
+                    {% endfor %}
+                </div>
+
+            </article>
+
+            {% else %}
+
+            <div class="premium-no-candidates">
+                <div class="no-candidates-icon">🔎</div>
+                <h3>Your team is waiting to be discovered!</h3>
+                <p>
+                    Candidate suggestions will appear here when users register
+                    and complete their profiles.
+                </p>
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        <div class="matching-disclaimer">
+            <span>ℹ️</span>
+            Match scores are baseline rule-based estimates in this prototype.
+        </div>
+
+    </section>
+
+
+    {% else %}
+
+    <!-- STUDENT: OWN MATCH INFORMATION -->
+
+    <section class="premium-matches-section">
+
+        <div class="detail-section-heading">
+            <div>
+                <span class="eyebrow">YOUR PROJECT COMPATIBILITY</span>
+                <h2>Your Match Score ✨</h2>
+                <p>See how your profile matches this project's requirements.</p>
+            </div>
+        </div>
+
+        {% if own_match %}
+
+        <div class="student-match-card">
+            <div class="student-match-score">
+                <strong>{{ own_match[0] }}%</strong>
+                <span>PROFILE COMPATIBILITY</span>
+            </div>
+
+            <div class="student-match-reasons">
+                <h3>Why you match this project</h3>
+
+                {% for reason in own_match[1] %}
+                <p>✓ {{ reason }}</p>
+                {% else %}
+                <p>Complete your profile to improve your matching results.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% endif %}
+
+        <div class="matching-disclaimer">
+            <span>ℹ️</span>
+            Match scores are baseline rule-based estimates in this prototype.
+        </div>
+
+    </section>
+
+    {% endif %}
+
+
+    <div class="detail-back-link">
+        <a href="{{ url_for('main.projects') }}">← Back to Explore Projects</a>
+    </div>
+
+</div>
+
+{% endblock %}

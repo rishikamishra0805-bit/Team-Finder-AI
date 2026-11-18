@@ -1,0 +1,164 @@
+
+{% extends "base.html" %}
+
+{% block title %}Create Project · Team Finder AI{% endblock %}
+
+{% block content %}
+
+<section class="create-project-hero">
+    <div class="eyebrow">✦ TURN YOUR IDEA INTO REALITY</div>
+    <h1>Let's build something <span>amazing.</span></h1>
+    <p>
+        Share your vision, define your requirements and find
+        the right people to bring your project to life.
+    </p>
+</section>
+
+<div class="create-project-layout">
+
+    <form method="post" class="form panel create-project-form">
+
+        <div class="form-section-heading">
+            <span class="form-step">01</span>
+            <div>
+                <h2>Project Basics</h2>
+                <p>Tell everyone about your idea.</p>
+            </div>
+        </div>
+
+        <label>
+            Project Title *
+            <input name="title" required
+                   placeholder="e.g. Campus Waste Management App">
+        </label>
+
+        <label>
+            Project Description *
+            <textarea name="description" required rows="5"
+                      placeholder="What problem does your project solve? What do you want to build?"></textarea>
+        </label>
+
+        <div class="form-divider"></div>
+
+        <div class="form-section-heading">
+            <span class="form-step">02</span>
+            <div>
+                <h2>Team Requirements</h2>
+                <p>Describe the teammates you are looking for.</p>
+            </div>
+        </div>
+
+        <div class="form-grid">
+
+            <label>
+                Required Skills
+                <input name="required_skills"
+                       placeholder="Python, UI/UX, Research">
+            </label>
+
+            <label>
+                Roles Needed
+                <input name="roles_needed"
+                       placeholder="Developer, Designer, Marketing">
+            </label>
+
+            <label>
+                Related Interests
+                <input name="interests"
+                       placeholder="AI, Sustainability, Education">
+            </label>
+
+            <label>
+                Experience Level
+                <select name="experience">
+                    <option>Beginner</option>
+                    <option>Intermediate</option>
+                    <option>Advanced</option>
+                </select>
+            </label>
+
+        </div>
+
+        <div class="form-divider"></div>
+
+        <div class="form-section-heading">
+            <span class="form-step">03</span>
+            <div>
+                <h2>Collaboration Details</h2>
+                <p>Set your preferred working arrangements.</p>
+            </div>
+        </div>
+
+        <div class="form-grid">
+
+            <label>
+                Availability
+                <select name="availability">
+                    <option>Flexible</option>
+                    <option>Weekdays</option>
+                    <option>Weekends</option>
+                    <option>Part-time</option>
+                </select>
+            </label>
+
+            <label>
+                Work Preference
+                <select name="work_preference">
+                    <option>Remote</option>
+                    <option>Hybrid</option>
+                    <option>In-person</option>
+                    <option>Flexible</option>
+                </select>
+            </label>
+
+        </div>
+
+        <label>
+            Project Goals
+            <input name="goals"
+                   placeholder="Build MVP, launch startup, win hackathon">
+        </label>
+
+        <div class="create-submit-area">
+            <p>✦ Your project will be shared with the Team Finder community.</p>
+            <button type="submit" class="btn primary">
+                Publish Project →
+            </button>
+        </div>
+
+    </form>
+
+    <aside class="create-project-sidebar">
+
+        <div class="create-tip-card">
+            <div class="tip-icon">💡</div>
+            <h3>Make your idea stand out</h3>
+            <p>
+                A clear project description helps potential teammates
+                understand your vision and get excited to join.
+            </p>
+        </div>
+
+        <div class="create-tip-card">
+            <div class="tip-icon">🤝</div>
+            <h3>Find complementary skills</h3>
+            <p>
+                Mention the roles and skills you need. Different
+                strengths can make your team more effective.
+            </p>
+        </div>
+
+        <div class="create-tip-card">
+            <div class="tip-icon">🚀</div>
+            <h3>Build together</h3>
+            <p>
+                Publish your idea and discover people who share
+                your interests and goals.
+            </p>
+        </div>
+
+    </aside>
+
+</div>
+
+{% endblock %}
